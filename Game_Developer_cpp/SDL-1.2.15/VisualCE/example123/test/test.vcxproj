@@ -14,6 +14,7 @@
     <ProjectGuid>{3F63A72B-949B-4F72-A93F-FA25E693496F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>test</RootNamespace>
+    <ProjectName>NunoMoreiraM3Test</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -39,8 +40,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\NunoStockwell\Downloads\King\Game_Developer_cpp\SDL-1.2.15\include\debug\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\NunoStockwell\Downloads\King\Game_Developer_cpp\SDL-1.2.15\include\debug\lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\include\SDL_D\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\include\SDL_D\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

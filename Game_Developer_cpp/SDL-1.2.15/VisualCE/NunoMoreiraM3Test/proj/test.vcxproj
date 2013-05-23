@@ -16,6 +16,10 @@
     <ClCompile Include="..\src\Board.cpp" />
     <ClCompile Include="..\src\Gem.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="Point.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Point.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3F63A72B-949B-4F72-A93F-FA25E693496F}</ProjectGuid>
@@ -49,7 +53,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\include;..\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\lib\x86;$(LibraryPath)</LibraryPath>
-    <OutDir>$(SolutionDir)\..\binary\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

@@ -2,11 +2,15 @@
 #include <stdlib.h>
 
 #include "SDL.h"
+#include "Point.h"
 #include "Board.h"
+
+
+Board* board;
 
 /* This function may run in a separate event thread */
 int FilterEvents(const SDL_Event *event) {
-    static int boycott = 1;
+    static int boycott = 0;
 
     /* This quit event signals the closing of the window */
     if ( (event->type == SDL_QUIT) && boycott ) {
@@ -17,16 +21,19 @@ int FilterEvents(const SDL_Event *event) {
     if ( event->type == SDL_MOUSEMOTION ) {
         printf("Mouse moved to (%d,%d)\n",
                 event->motion.x, event->motion.y);
+		if(board != NULL)
+			board->mouseOver(event->motion.x, event->motion.y);
         return(0);    /* Drop it, we've handled it */
     }
     return(1);
 }
 
+
+
 int main(int argc, char *argv[])
 {
     SDL_Event event;
 	SDL_Surface *screen;
-	Board* board;
 
     /* Initialize the SDL library (starts the event loop) */
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -52,15 +59,17 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg");
+	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg",5,Point(35,35));
 	
 	board->setScreen(screen);
 	board->init();
-	if(board)
-		board->render(0,0);
+	
 
     /* Loop waiting for ESC+Mouse_Button */
     while ( SDL_WaitEvent(&event) >= 0 ) {
+		if(board)
+		board->render(0,0);
+
         switch (event.type) {
             case SDL_ACTIVEEVENT: {
                 if ( event.active.state & SDL_APPACTIVE ) {
@@ -87,6 +96,8 @@ int main(int argc, char *argv[])
 
             case SDL_QUIT: {
                 printf("Quit requested, quitting.\n");
+
+				delete board;
                 exit(0);
             }
             break;

@@ -2,12 +2,15 @@
 #include "Gem.h"
 
 
-Gem::Gem(int type, char* imageFile)
+Gem::Gem(Point pos, int type, char* imageFile)
 {
+	mPosition = pos;
 	mInitialized = false;
 	mType = type;
 	mDrawingScreen = NULL;
 	
+	mVisible = true;
+
 	mImageFile = std::string(imageFile);
 }
 
@@ -32,9 +35,14 @@ void Gem::setScreen(SDL_Surface *screen)
 	mDrawingScreen = screen;
 }
 
+void Gem::mouseOver(bool over)
+{
+	mVisible = !over;
+}
+
 void Gem::render(int x, int y)
 {
-	if(!mInitialized)
+	if(!mInitialized || !mVisible)
 		return;
 
 	SDL_Rect dest;

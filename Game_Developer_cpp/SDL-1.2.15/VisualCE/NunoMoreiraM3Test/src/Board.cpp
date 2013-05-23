@@ -2,7 +2,7 @@
 #include "Board.h"
 
 
-Board::Board(int rows, int columns, char* backgroundFile)
+Board::Board(int rows, int columns, char* backgroundFile, int numGemTypes, Point gemSize)
 {
 
 	mBackgroundFileName = std::string(backgroundFile);
@@ -13,12 +13,16 @@ Board::Board(int rows, int columns, char* backgroundFile)
 
 	mTotalElements = rows*columns;
 
+	mNumGemTypes = numGemTypes;
+
 	mTiles = std::vector<Gem*>(mTotalElements);
 	
 	mDrawingScreen = NULL;
 
 	mInitialized = false;
-	
+	mGemSize = gemSize;
+	//mGemSize.setX(GemW);
+	//mGemSize.setY(GemH);
 	
 }
 
@@ -32,7 +36,6 @@ Board::~Board()
 
 void Board::init()
 {
-	//needs to be a bmp
 	mBackground = IMG_Load(mBackgroundFileName.c_str());
 	if(mBackground == NULL)
 	{
@@ -42,14 +45,37 @@ void Board::init()
 
 	srand (time(NULL));
 
+	vector<string> gemsAssets;
+	gemsAssets.push_back("assets/art/Gems/green.png");
+	gemsAssets.push_back("assets/art/Gems/blue.png");
+	gemsAssets.push_back("assets/art/Gems/red.png");
+	gemsAssets.push_back("assets/art/Gems/yellow.png");
+	gemsAssets.push_back("assets/art/Gems/purple.png");
+
+	
 	for(int i = 0; i < mTotalElements; i++)
 	{
-		mTiles[i] = new Gem(rand() % 5, "assets/art/Gems/green.png");
+		int type = rand() % mNumGemTypes;
+		mTiles[i] = new Gem(Point(i%mColumns, i/mRows), type, (char*)gemsAssets.at(type).c_str());
 		mTiles[i]->setScreen(mDrawingScreen);
 		mTiles[i]->init();
 	}
 
 	mInitialized = true;
+}
+
+void Board::mouseOver(int x, int y)
+{
+	if(x > mBackground->w || y > mBackground->h || x < 0 || y < 0)
+		return;
+
+	
+	int indexX = ((int)x / mGemSize.getX());
+	int indexY =  ((int)y / mGemSize.getY());
+
+	if(indexX + indexY*mColumns > mTotalElements || indexX > mColumns || indexY > mRows)
+		return;
+	mTiles[indexX + indexY*mColumns]->mouseOver(true); 
 }
 
 void Board::update(float dt)
@@ -74,7 +100,7 @@ void Board::render(int x, int y)
 
 	for(int i = 0; i < mTotalElements; i++)
 	{
-		mTiles[i]->render( (i%mColumns) * 35, ((int)(i/mRows))*35); 
+		mTiles[i]->render( (i%mColumns) * mGemSize.getX(), ((int)(i/mRows))*mGemSize.getY()); 
 	}
 
 	SDL_UpdateRects(mDrawingScreen, 1, &dest);

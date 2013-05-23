@@ -11,6 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\include\Board.h" />
+    <ClCompile Include="..\include\Gem.h" />
+    <ClCompile Include="..\src\Board.cpp" />
+    <ClCompile Include="..\src\Gem.cpp" />
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -43,14 +47,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\..\..\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\..\include;..\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)\..\binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\..\binary\$(Configuration)\</OutDir>
-    <IncludePath>..\..\..\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
+    <IncludePath>..\..\..\include;..\include;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSdkDir)include;$(FrameworkSDKDir)\include;</IncludePath>
     <LibraryPath>..\..\..\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -66,6 +70,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>SDLmain.lib;SDL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

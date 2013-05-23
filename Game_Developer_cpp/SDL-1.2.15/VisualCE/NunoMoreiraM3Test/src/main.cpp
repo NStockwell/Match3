@@ -53,8 +53,11 @@ int main(int argc, char *argv[])
     }
 
 	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg");
+	
+	board->setScreen(screen);
+	board->init();
 	if(board)
-		board->render(screen,0,0);
+		board->render(0,0);
 
     /* Loop waiting for ESC+Mouse_Button */
     while ( SDL_WaitEvent(&event) >= 0 ) {

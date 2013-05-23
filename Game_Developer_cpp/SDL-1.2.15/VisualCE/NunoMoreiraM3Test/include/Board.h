@@ -7,6 +7,9 @@
 #include "SDL.h"
 #include "SDL_image.h"
 
+#include <stdlib.h>
+#include <time.h>
+
 
 class Board
 {
@@ -14,14 +17,19 @@ class Board
 public:
 	Board(int r, int c, char* backgroundFile);
 	~Board();
+	void setScreen(SDL_Surface *screen);
 	void update(float dt);
-	void render(SDL_Surface *screen, int x, int y);
+	void render(int x, int y);
+	void init();
 
 private:
 	int mRows;
 	int mColumns;
 	int mTotalElements;
-	SDL_Surface *background;
+	bool mInitialized;
+	std::string mBackgroundFileName;
+	SDL_Surface *mBackground;
+	SDL_Surface *mDrawingScreen;
 	std::vector<Gem*> mTiles;
 
 };

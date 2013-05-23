@@ -5,6 +5,7 @@
 #include "Gem.h"
 #include <vector>
 #include "SDL.h"
+#include "SDL_image.h"
 
 
 class Board

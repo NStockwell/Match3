@@ -46,13 +46,15 @@ int main(int argc, char *argv[])
     SDL_SetEventFilter(FilterEvents);
 
     /* The mouse isn't much use unless we have a display for reference */
-    if ( (screen = SDL_SetVideoMode(640, 480, 8, 0)) == NULL ) {
+    if ( (screen = SDL_SetVideoMode(800, 600, 8, 0)) == NULL ) {
         fprintf(stderr, "Couldn't set 640x480x8 video mode: %s\n",
                         SDL_GetError());
         exit(1);
     }
 
 	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg");
+	if(board)
+		board->render(screen,0,0);
 
     /* Loop waiting for ESC+Mouse_Button */
     while ( SDL_WaitEvent(&event) >= 0 ) {

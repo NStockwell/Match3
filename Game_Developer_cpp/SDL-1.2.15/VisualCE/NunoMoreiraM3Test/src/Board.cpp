@@ -7,7 +7,7 @@ Board::Board(int rows, int columns, char* backgroundFile)
 
 	
 	//needs to be a bmp
-	background = SDL_LoadBMP(backgroundFile);
+	background = IMG_Load(backgroundFile);
 	if(background == NULL)
 	{
 		fprintf(stderr, "Couldn't load %s: %s\n", backgroundFile, SDL_GetError());

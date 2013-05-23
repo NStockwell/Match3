@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "SDL.h"
+#include "Board.h"
 
 /* This function may run in a separate event thread */
 int FilterEvents(const SDL_Event *event) {
@@ -24,6 +25,8 @@ int FilterEvents(const SDL_Event *event) {
 int main(int argc, char *argv[])
 {
     SDL_Event event;
+	SDL_Surface *screen;
+	Board* board;
 
     /* Initialize the SDL library (starts the event loop) */
     if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -43,11 +46,13 @@ int main(int argc, char *argv[])
     SDL_SetEventFilter(FilterEvents);
 
     /* The mouse isn't much use unless we have a display for reference */
-    if ( SDL_SetVideoMode(640, 480, 8, 0) == NULL ) {
+    if ( (screen = SDL_SetVideoMode(640, 480, 8, 0)) == NULL ) {
         fprintf(stderr, "Couldn't set 640x480x8 video mode: %s\n",
                         SDL_GetError());
         exit(1);
     }
+
+	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg");
 
     /* Loop waiting for ESC+Mouse_Button */
     while ( SDL_WaitEvent(&event) >= 0 ) {

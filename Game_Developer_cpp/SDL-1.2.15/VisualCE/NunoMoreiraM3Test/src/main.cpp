@@ -4,6 +4,7 @@
 #include "SDL.h"
 #include "Point.h"
 #include "Board.h"
+#include "GemManager.h"
 
 
 Board* board;
@@ -68,7 +69,15 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg",5,Point(35,35));
+		
+	GemManager::getInstance().addGem(0,"assets/art/Gems/green.png");
+	GemManager::getInstance().addGem(1,"assets/art/Gems/blue.png");
+	GemManager::getInstance().addGem(2,"assets/art/Gems/red.png");
+	GemManager::getInstance().addGem(3,"assets/art/Gems/yellow.png");
+	GemManager::getInstance().addGem(4,"assets/art/Gems/purple.png");
+
+
+	board = new Board(8,8,/*"assets\\art\\board\\BackGround.jpg",*/5,Point(35,35));
 	board->setPosition(330,100);
 	board->setScreen(screen);
 	board->init();
@@ -115,6 +124,7 @@ int main(int argc, char *argv[])
                     exit(0);
                 }
                 printf("Mouse button pressed\n");
+				board->mousePressed(event.motion.x, event.motion.y);
             }
             break;
 

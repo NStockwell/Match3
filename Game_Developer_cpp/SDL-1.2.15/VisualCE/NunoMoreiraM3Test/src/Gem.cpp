@@ -11,7 +11,7 @@ Gem::Gem(int type, char* imageFile)
 	
 	mVisible = true;
 
-	mImageFile = std::string(imageFile);
+	mImageFilename = std::string(imageFile);
 }
 
 Gem::~Gem()
@@ -26,10 +26,10 @@ void Gem::setPosition(int x, int y)
 
 void Gem::init()
 {
-	mBackground = IMG_Load(mImageFile.c_str());
+	mBackground = IMG_Load(mImageFilename.c_str());
 	if(mBackground == NULL)
 	{
-		fprintf(stderr, "Couldn't load %s: %s\n", mImageFile, SDL_GetError());
+		fprintf(stderr, "Couldn't load %s: %s\n", mImageFilename, SDL_GetError());
 		return;
 	}
 
@@ -41,9 +41,25 @@ void Gem::setScreen(SDL_Surface *screen)
 	mDrawingScreen = screen;
 }
 
+
+int  Gem::getType()
+{
+	return mType;
+}
+
+string  Gem::getImagefilename()
+{
+	return mImageFilename;
+}
+
+void Gem::mousePressed(bool pressed)
+{
+
+}
+
 void Gem::mouseOver(bool over)
 {
-	mVisible = !over;
+	//mVisible = !over;
 }
 
 void Gem::render()

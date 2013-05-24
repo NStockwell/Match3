@@ -9,11 +9,13 @@
 
 #include <string>
 
+using namespace std;
+
 class Gem
 {
 
 public:
-	Gem(int type, char* imageFile);
+	Gem(int type, char* imageFilename);
 	~Gem();
 	void init();
 	void setScreen(SDL_Surface *screen);
@@ -23,14 +25,17 @@ public:
 	void update(float dt);
 	
 	void mouseOver(bool over);
+	void mousePressed(bool pressed);
 	void setPosition(int x, int y);
+	int getType();
+	string getImagefilename();
 
 private:
 	Point mPosition;
 	bool mInitialized;
 	bool mVisible;
 	int mType;
-	std::string mImageFile;
+	std::string mImageFilename;
 	SDL_Surface *mBackground;
 	SDL_Surface *mDrawingScreen;
 

@@ -7,6 +7,7 @@
 
 
 Board* board;
+SDL_Surface *mBackground;
 
 /* This function may run in a separate event thread */
 int FilterEvents(const SDL_Event *event) {
@@ -59,18 +60,41 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+
+	mBackground = IMG_Load("assets\\art\\board\\BackGround.jpg");
+	if(mBackground == NULL)
+	{
+		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\board\\BackGround.jpg", SDL_GetError());
+		return 0;
+	}
+
 	board = new Board(8,8,"assets\\art\\board\\BackGround.jpg",5,Point(35,35));
-	
+	board->setPosition(330,100);
 	board->setScreen(screen);
 	board->init();
 	
 
+	SDL_Rect dest;
+
+	dest.x = 0;
+	dest.y = 0;
+	dest.w = mBackground->w;
+	dest.h = mBackground->h;
+
+	
+
     /* Loop waiting for ESC+Mouse_Button */
     while ( SDL_WaitEvent(&event) >= 0 ) {
-		if(board)
-		board->render(0,0);
+		
 
-        switch (event.type) {
+		SDL_BlitSurface(mBackground, NULL, screen, &dest);
+
+		SDL_UpdateRects(screen, 1, &dest);
+
+		if(board)
+			board->render();
+        
+		switch (event.type) {
             case SDL_ACTIVEEVENT: {
                 if ( event.active.state & SDL_APPACTIVE ) {
                     if ( event.active.gain ) {

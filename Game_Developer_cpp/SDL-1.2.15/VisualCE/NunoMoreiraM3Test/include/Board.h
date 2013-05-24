@@ -20,9 +20,11 @@ public:
 	~Board();
 	void setScreen(SDL_Surface *screen);
 	void update(float dt);
+	void render();
 	void render(int x, int y);
 	void init();
 	void mouseOver(int x, int y);
+	void setPosition(int x, int y);
 
 private:
 	int mRows;
@@ -30,6 +32,8 @@ private:
 	int mTotalElements;
 	int mNumGemTypes;
 	bool mInitialized;
+	Point mPosition;
+	Point mSize;
 	Point mGemSize;
 	std::string mBackgroundFileName;
 	SDL_Surface *mBackground;

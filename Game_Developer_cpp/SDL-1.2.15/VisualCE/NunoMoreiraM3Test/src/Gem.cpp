@@ -2,9 +2,9 @@
 #include "Gem.h"
 
 
-Gem::Gem(Point pos, int type, char* imageFile)
+Gem::Gem(int type, char* imageFile)
 {
-	mPosition = pos;
+	mPosition =  Point(0,0);
 	mInitialized = false;
 	mType = type;
 	mDrawingScreen = NULL;
@@ -16,6 +16,12 @@ Gem::Gem(Point pos, int type, char* imageFile)
 
 Gem::~Gem()
 {
+}
+
+void Gem::setPosition(int x, int y)
+{
+	mPosition.setX(x);
+	mPosition.setY(y);
 }
 
 void Gem::init()
@@ -38,6 +44,11 @@ void Gem::setScreen(SDL_Surface *screen)
 void Gem::mouseOver(bool over)
 {
 	mVisible = !over;
+}
+
+void Gem::render()
+{
+	render(mPosition.getX(), mPosition.getY());
 }
 
 void Gem::render(int x, int y)

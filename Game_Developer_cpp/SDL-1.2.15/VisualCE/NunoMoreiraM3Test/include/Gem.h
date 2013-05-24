@@ -13,14 +13,17 @@ class Gem
 {
 
 public:
-	Gem(Point pos, int type, char* imageFile);
+	Gem(int type, char* imageFile);
 	~Gem();
 	void init();
 	void setScreen(SDL_Surface *screen);
+	
+	void render();
 	void render(int x, int y);
 	void update(float dt);
 	
 	void mouseOver(bool over);
+	void setPosition(int x, int y);
 
 private:
 	Point mPosition;

@@ -46,6 +46,9 @@ local.properties
 x64/
 build/
 
+proj/Debug/
+proj/Release/
+
 [Oo]bj/
 
 # MSTest test Results

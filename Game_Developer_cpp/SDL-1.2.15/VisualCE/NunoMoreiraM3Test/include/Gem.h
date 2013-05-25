@@ -19,7 +19,8 @@ public:
 	~Gem();
 	void init();
 	void setScreen(SDL_Surface *screen);
-	
+	void setVisible(bool visible);
+
 	void render();
 	void render(int x, int y);
 	void update(float dt);

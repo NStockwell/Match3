@@ -178,9 +178,6 @@ int main(int argc, char *argv[])
 			eventHandler(&ev);
 		}
 
-		
-		
-
 		if(board)
 		{
 
@@ -189,12 +186,15 @@ int main(int argc, char *argv[])
         
 
 			board->update((dt - currentTime)  *0.001);
+			if(board->isAnimating())
+			{
+				SDL_BlitSurface(mBackground, NULL, screen, &dest);
+				SDL_UpdateRects(screen, 1, &dest);
+			}
 			board->render();
 			currentTime = dt;
 		}
 
-
-		//Sleep(250);
 		
     }
     /* This should never happen */

@@ -21,6 +21,7 @@ Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, P
 	mInitialized = false;
 	mSwitching = false;
 	mUndoSwitch = false;
+	mAnimating = false;
 	mGemSize = gemSize;
 
 	mSize.setX(mColumns * mGemSize.getX());
@@ -34,6 +35,9 @@ Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, P
 
 Board::~Board()
 {
+	delete mMatchingInfo.numberMatchesInColumn;
+	delete mMatchingInfo.lowestGemPosition;
+
 	for(int i = mTiles.size() - 1; i >= 0; i--)
 	{
 		delete mTiles[i];
@@ -58,6 +62,9 @@ void Board::init()
 	gemsAssets.push_back("assets/art/Gems/yellow.png");
 	gemsAssets.push_back("assets/art/Gems/purple.png");*/
 
+	mMatchingInfo.numberMatchesInColumn = new int[mColumns];
+	mMatchingInfo.lowestGemPosition = new int[mColumns];
+
 	
 	for(int i = 0; i < mTotalElements; i++)
 	{
@@ -72,6 +79,10 @@ void Board::init()
 	mInitialized = true;
 }
 
+bool Board::isAnimating()
+{
+	return mAnimating;
+}
 
 bool Board::insideBoundaries(Point p)
 {
@@ -147,16 +158,18 @@ void Board::mousePressed(int x, int y)
 	mTiles[index]->mousePressed(true); 
 }
 
-void Board::switchGems(Point p1, Point p2, bool reverting)
+void Board::switchGems(Point p1, Point p2, bool reverting, bool animate)
 {
 	mSwitching = true;
 	Gem* tempGem = mTiles[XYCoordinatesToIndex(p1)];
 	mTiles[XYCoordinatesToIndex(p1)] =  mTiles[XYCoordinatesToIndex(p2)];
 	mTiles[XYCoordinatesToIndex(p2)] = tempGem;
 	
-	moveGem(mTiles[XYCoordinatesToIndex(p1)], mTiles[XYCoordinatesToIndex(p2)]->getPosition());
-	moveGem(mTiles[XYCoordinatesToIndex(p2)], mTiles[XYCoordinatesToIndex(p1)]->getPosition());
-	
+	if(animate)
+	{
+		moveGem(mTiles[XYCoordinatesToIndex(p1)], mTiles[XYCoordinatesToIndex(p2)]->getPosition());
+		moveGem(mTiles[XYCoordinatesToIndex(p2)], mTiles[XYCoordinatesToIndex(p1)]->getPosition());
+	}
 	if(!reverting)
 	{
 		vector<Point> matches = checkForMatches(p1);	
@@ -164,7 +177,9 @@ void Board::switchGems(Point p1, Point p2, bool reverting)
 
 		for(int i = 0; i < matchesP2.size(); i++)
 		{
-			matches.push_back(matchesP2[i]);
+			vector<Point>::iterator it = std::find(matches.begin(), matches.end(), matchesP2.at(i));
+			if(it == matches.end())
+				matches.push_back(matchesP2.at(i));
 		}
 
 		if(matches.size() == 0)
@@ -173,9 +188,89 @@ void Board::switchGems(Point p1, Point p2, bool reverting)
 			mUndo.p1 = p1;
 			mUndo.p2 = p2;
 		}
+		else
+		{
+			storeMatches(matches);
+		}
 	}
 
 	mSwitching = false;
+}
+
+void Board::storeMatches(vector<Point> matches)
+{
+	clearNumberMatchesInColumns();
+	for(int i = 0; i < matches.size() ; i++)
+    {
+		Point checkForMinimumPoint = matches.at(i);
+		mMatchingInfo.numberMatchesInColumn[(int)checkForMinimumPoint.getX()]++;
+		int minimumPointY = checkForMinimumPoint.getY();
+		if(mMatchingInfo.lowestGemPosition[(int)checkForMinimumPoint.getX()] < minimumPointY)
+		{
+			mMatchingInfo.lowestGemPosition[(int)checkForMinimumPoint.getX()] = minimumPointY;
+		}
+	}
+	for(int i = 0; i < matches.size() ; i++)
+    {
+        for (int j=0; j<matches.size()-i-1;j++)
+        {
+			Point current = matches.at(j);
+			Point next = matches.at(j+1);
+			Point temp;
+			if(current < next)
+			{
+				temp = current;
+				matches[j] = next;
+				matches[j+1] = temp;
+			}
+        }
+    }
+
+	mStoredMatches = matches;
+}
+
+void Board::clearNumberMatchesInColumns()
+{
+	for(int i = 0; i < mColumns; i++)
+	{
+		mMatchingInfo.numberMatchesInColumn[i] = 0;
+		mMatchingInfo.lowestGemPosition[i] = 0;
+	}
+}
+
+void Board::makeMatches()
+{
+	Point p;
+	if(mStoredMatches.empty())
+		return;
+
+	for(int i = 0; i < mColumns; i++)
+	{
+		//p = mStoredMatches.at(i);
+		//mTiles[XYCoordinatesToIndex(p)]->setVisible(false);
+		int xIndex = i;//(int)p.getX();
+		for(int j = mMatchingInfo.lowestGemPosition[xIndex] /*p.getY()*/-1; j >=0; j--)
+		{
+			switchGems(Point(xIndex, j), Point(xIndex, j+1/*p.getY()*/), true,false);
+			//p.setY(j);
+		}
+	}
+	//Now all matched gems should be at the top
+	for(int i = 0; i < mColumns/* mStoredMatches.size()*/; i++)
+	{
+		//p = mStoredMatches.at(i);
+		int xIndex = i;// (int)p.getX();
+		int occurrencesInColumn = mMatchingInfo.numberMatchesInColumn[xIndex];
+		
+		for(int j =  mMatchingInfo.lowestGemPosition[xIndex] /*p.getY()*/ /*- occurrencesInColumn*/; j >= 0 /*occurrencesInColumn*/; j--)
+		{
+			
+			moveGem(mTiles.at(XYCoordinatesToIndex(xIndex,j)) ,
+				(mTiles.at(XYCoordinatesToIndex(xIndex,(j + occurrencesInColumn) % (/*(int)p.getY()*/mMatchingInfo.lowestGemPosition[xIndex] +1)))->getPosition() ));
+		}
+	}
+	clearNumberMatchesInColumns();
+	mStoredMatches.clear();
 }
 
 void Board::moveGem(Gem* g, Point p)
@@ -201,9 +296,10 @@ void Board::update(float dt)
 		return;
 
 	vector<int> finishedAnimationsIndexes;
-
+	mAnimating = false;
 	for(int i = 0; i < mAnimations.size(); i++)
 	{
+		mAnimating = true;
 		mAnimations.at(i)->update(dt);
 		if(mAnimations.at(i)->getFinished())
 		{
@@ -220,6 +316,10 @@ void Board::update(float dt)
 	{
 		switchGems(mUndo.p1, mUndo.p2, true);
 		mUndoSwitch = false;
+	}
+	if(mAnimations.size() == 0 && finishedAnimationsIndexes.size() != 0)
+	{
+		makeMatches();
 	}
 
 
@@ -298,6 +398,7 @@ vector<Point> Board::checkForMatches(Point p)
 	**/
 	vector<Point> horizontalMatches;
 	checkingThisPoint = p;
+	
 	while( (checkingThisPoint = isLeftNeighbourTheSameType(checkingThisPoint)) != NULL_POINT)
 	{
 		horizontalMatches.push_back(checkingThisPoint);

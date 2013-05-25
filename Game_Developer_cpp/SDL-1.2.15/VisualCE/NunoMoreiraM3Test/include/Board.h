@@ -16,11 +16,18 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 struct Undo{
 	Point p1;
 	Point p2;
+};
+
+struct MatchingInfo
+{
+	int* numberMatchesInColumn;
+	int* lowestGemPosition;
 };
 
 class Board
@@ -37,6 +44,7 @@ public:
 	void mouseOver(int x, int y);
 	void mousePressed(int x, int y);
 	void setPosition(int x, int y);
+	bool isAnimating();
 
 private:
 	int mRows;
@@ -44,18 +52,22 @@ private:
 	int mTotalElements;
 	int mNumGemTypes;
 	bool mInitialized;
+	bool mAnimating;
 	bool mSwitching;
 	bool mUndoSwitch;
 	Point mPosition;
 	Point mSize;
 	Point mGemSize;
 	Undo mUndo;
+	MatchingInfo mMatchingInfo;
 	/*std::string mBackgroundFileName;*/
 	/*SDL_Surface *mBackground;*/
 	SDL_Surface *mDrawingScreen;
 	std::vector<Gem*> mTiles;
 	vector<GemAnimator*> mAnimations;
+	vector<Point> mStoredMatches;
 	Point mSelectedGemIndex;
+
 
 	bool insideBoundaries(int x, int y);	
 	bool insideBoundaries(Point p);
@@ -67,12 +79,14 @@ private:
 	int XYCoordinatesToIndex(Point p);
 	int XYCoordinatesToIndex(int x, int y);
 	
-	void switchGems(Point g1, Point g2, bool reverting = false);
+	void switchGems(Point g1, Point g2, bool reverting = false, bool animate = true);
 	void moveGem(Gem* g, Point p);
 	
 
 	bool hasMatches();
 	vector<Point> checkForMatches(Point p);
+	void storeMatches(vector<Point> matches);
+	void makeMatches();
 	vector<Point> getNeighbours(Point p);
 
 	Point isUpNeighbourTheSameType(Point p);
@@ -84,6 +98,9 @@ private:
 
 	bool isSameType(Gem* g1, Gem* g2);
 
+
+	
+	void clearNumberMatchesInColumns();
 };
 
 #endif

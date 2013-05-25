@@ -21,7 +21,8 @@ public:
 
 	
 	inline bool operator!=(const Point &p) {return !(*this==p);}
-
+	inline bool operator<(const Point &p) {return ( getX() < p.getX()) || ((getX() == p.getX()) && (getY() < p.getY())); }
+	inline bool operator>(const Point &p) { return !(*this < p);}
 	inline Point operator-(const Point &p) {Point result; result.setX(getX() - p.getX()); result.setY(getY() - p.getY()); return result; }
 	inline Point operator+(const Point &p) {Point result; result.setX(getX() + p.getX()); result.setY(getY() + p.getY()); return result; }
 

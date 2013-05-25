@@ -66,6 +66,11 @@ void Gem::setScreen(SDL_Surface *screen)
 	dirty();
 }
 
+void Gem::setVisible(bool visible)
+{
+	mVisible = visible;
+}
+
 
 int  Gem::getType()
 {
@@ -94,7 +99,7 @@ void Gem::render()
 
 void Gem::render(int x, int y)
 {
-	if(!mInitialized || !mVisible || !mDirty)
+	if(!mInitialized || !mVisible/* || !mDirty*/)
 		return;
 
 	SDL_Rect dest;

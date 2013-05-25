@@ -35,6 +35,7 @@
 			mTimePassed = mTimeInterval;
 			dt = mTimeInterval - mTimePassed;
 			mFinished = true;
+			mGem->setVisible(true);
 		}
 		
 		if(mGem != NULL)

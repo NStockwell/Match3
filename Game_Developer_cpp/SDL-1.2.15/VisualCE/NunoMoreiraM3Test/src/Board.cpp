@@ -161,14 +161,16 @@ void Board::mousePressed(int x, int y)
 void Board::switchGems(Point p1, Point p2, bool reverting, bool animate)
 {
 	mSwitching = true;
-	Gem* tempGem = mTiles[XYCoordinatesToIndex(p1)];
-	mTiles[XYCoordinatesToIndex(p1)] =  mTiles[XYCoordinatesToIndex(p2)];
-	mTiles[XYCoordinatesToIndex(p2)] = tempGem;
+	int p1Index = XYCoordinatesToIndex(p1);
+	int p2Index = XYCoordinatesToIndex(p2);
+	Gem* tempGem = mTiles[p1Index];
+	mTiles[p1Index] = mTiles[p2Index];
+	mTiles[p2Index] = tempGem;
 	
 	if(animate)
 	{
-		moveGem(mTiles[XYCoordinatesToIndex(p1)], mTiles[XYCoordinatesToIndex(p2)]->getPosition());
-		moveGem(mTiles[XYCoordinatesToIndex(p2)], mTiles[XYCoordinatesToIndex(p1)]->getPosition());
+		moveGem(mTiles[p1Index], mTiles[p2Index]->getPosition());
+		moveGem(mTiles[p2Index], mTiles[p1Index]->getPosition());
 	}
 	if(!reverting)
 	{
@@ -246,27 +248,24 @@ void Board::makeMatches()
 
 	for(int i = 0; i < mColumns; i++)
 	{
-		//p = mStoredMatches.at(i);
-		//mTiles[XYCoordinatesToIndex(p)]->setVisible(false);
-		int xIndex = i;//(int)p.getX();
-		for(int j = mMatchingInfo.lowestGemPosition[xIndex] /*p.getY()*/-1; j >=0; j--)
-		{
-			switchGems(Point(xIndex, j), Point(xIndex, j+1/*p.getY()*/), true,false);
-			//p.setY(j);
-		}
+		int xIndex = i;
+		for(int k = 0; k < mMatchingInfo.numberMatchesInColumn[xIndex]; k++)
+			for(int j = mMatchingInfo.lowestGemPosition[xIndex] -1; j >=0; j--)
+			{
+				switchGems(Point(xIndex, j), Point(xIndex, j+1), true,false);
+			}
 	}
 	//Now all matched gems should be at the top
-	for(int i = 0; i < mColumns/* mStoredMatches.size()*/; i++)
+	for(int i = 0; i < mColumns; i++)
 	{
-		//p = mStoredMatches.at(i);
-		int xIndex = i;// (int)p.getX();
+		int xIndex = i;
 		int occurrencesInColumn = mMatchingInfo.numberMatchesInColumn[xIndex];
 		
-		for(int j =  mMatchingInfo.lowestGemPosition[xIndex] /*p.getY()*/ /*- occurrencesInColumn*/; j >= 0 /*occurrencesInColumn*/; j--)
+		for(int j =  mMatchingInfo.lowestGemPosition[xIndex]; j >= 0; j--)
 		{
 			
 			moveGem(mTiles.at(XYCoordinatesToIndex(xIndex,j)) ,
-				(mTiles.at(XYCoordinatesToIndex(xIndex,(j + occurrencesInColumn) % (/*(int)p.getY()*/mMatchingInfo.lowestGemPosition[xIndex] +1)))->getPosition() ));
+				(mTiles.at(XYCoordinatesToIndex(xIndex,(j + occurrencesInColumn) % (mMatchingInfo.lowestGemPosition[xIndex] +1)))->getPosition() ));
 		}
 	}
 	clearNumberMatchesInColumns();

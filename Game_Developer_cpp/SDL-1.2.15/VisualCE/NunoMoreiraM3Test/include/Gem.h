@@ -26,7 +26,9 @@ public:
 	
 	void mouseOver(bool over);
 	void mousePressed(bool pressed);
-	void setPosition(int x, int y);
+	void setPosition(float x, float y);
+	void incPosition(float x, float y);
+	Point getPosition();
 	int getType();
 	string getImagefilename();
 
@@ -34,11 +36,15 @@ private:
 	Point mPosition;
 	bool mInitialized;
 	bool mVisible;
+	bool mDirty;
 	int mType;
 	std::string mImageFilename;
 	SDL_Surface *mBackground;
 	SDL_Surface *mDrawingScreen;
 
+
+	void dirty();
+	void undirty();
 };
 
 #endif

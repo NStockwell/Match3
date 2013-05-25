@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
+#include <time.h>
+
 
 #include "SDL.h"
+#include "SDL_thread.h"
+
+
 #include "Point.h"
 #include "Board.h"
 #include "GemManager.h"
@@ -9,6 +15,50 @@
 
 Board* board;
 SDL_Surface *mBackground;
+
+
+
+
+int eventHandler(SDL_Event *ev)
+{
+
+	switch (ev->type) 
+	{
+        case SDL_ACTIVEEVENT: {
+            if ( ev->active.state & SDL_APPACTIVE ) {
+                if ( ev->active.gain ) {
+                    printf("App activated\n");
+                } else {
+                    printf("App iconified\n");
+                }
+            }
+        }
+        break;
+                    
+        case SDL_MOUSEBUTTONDOWN: {
+            Uint8 *keys;
+
+            keys = SDL_GetKeyState(NULL);
+            if ( keys[SDLK_ESCAPE] == SDL_PRESSED ) {
+                printf("Bye bye...\n");
+                exit(0);
+            }
+            printf("Mouse button pressed\n");
+			board->mousePressed(ev->motion.x, ev->motion.y);
+        }
+        break;
+
+
+        case SDL_QUIT: {
+            printf("Quit requested, quitting.\n");
+
+			delete board;
+            exit(0);
+        }
+        break;
+	}
+}
+
 
 /* This function may run in a separate event thread */
 int FilterEvents(const SDL_Event *event) {
@@ -27,6 +77,21 @@ int FilterEvents(const SDL_Event *event) {
 			board->mouseOver(event->motion.x, event->motion.y);
         return(0);    /* Drop it, we've handled it */
     }
+
+	   if ( event->type == SDL_MOUSEBUTTONDOWN) {
+                Uint8 *keys;
+
+                keys = SDL_GetKeyState(NULL);
+                if ( keys[SDLK_ESCAPE] == SDL_PRESSED ) {
+                    printf("Bye bye...\n");
+                    exit(0);
+					
+
+                }
+				board->mousePressed(event->motion.x, event->motion.y);
+                printf("Mouse button pressed\n");
+				return(0);
+	   }
     return(1);
 }
 
@@ -34,7 +99,6 @@ int FilterEvents(const SDL_Event *event) {
 
 int main(int argc, char *argv[])
 {
-    SDL_Event event;
 	SDL_Surface *screen;
 
     /* Initialize the SDL library (starts the event loop) */
@@ -52,7 +116,16 @@ int main(int argc, char *argv[])
     SDL_EventState(SDL_KEYUP, SDL_IGNORE);
 
     /* Filter quit and mouse motion events */
-    SDL_SetEventFilter(FilterEvents);
+    //SDL_SetEventFilter(FilterEvents);
+
+	//SDL_Thread *thread;
+
+ //   thread = SDL_CreateThread(eventHandler, NULL);
+ //   if ( thread == NULL ) {
+ //       fprintf(stderr, "Unable to create thread: %s\n", SDL_GetError());
+ //       return 0;
+ //   }
+
 
     /* The mouse isn't much use unless we have a display for reference */
     if ( (screen = SDL_SetVideoMode(800, 600, 8, 0)) == NULL ) {
@@ -90,52 +163,39 @@ int main(int argc, char *argv[])
 	dest.w = mBackground->w;
 	dest.h = mBackground->h;
 
+	unsigned int dt = SDL_GetTicks();
+	unsigned int currentTime = dt;
+	SDL_Event ev;
 	
+	SDL_BlitSurface(mBackground, NULL, screen, &dest);
+	SDL_UpdateRects(screen, 1, &dest);
 
-    /* Loop waiting for ESC+Mouse_Button */
-    while ( SDL_WaitEvent(&event) >= 0 ) {
+	while(1)
+	{
+		
+		while(SDL_PollEvent(&ev) > 0)
+		{
+			eventHandler(&ev);
+		}
+
+		
 		
 
-		SDL_BlitSurface(mBackground, NULL, screen, &dest);
-
-		SDL_UpdateRects(screen, 1, &dest);
-
 		if(board)
-			board->render();
+		{
+
+			dt = SDL_GetTicks();
+			printf("temp (%d)\n", dt - currentTime);
         
-		switch (event.type) {
-            case SDL_ACTIVEEVENT: {
-                if ( event.active.state & SDL_APPACTIVE ) {
-                    if ( event.active.gain ) {
-                        printf("App activated\n");
-                    } else {
-                        printf("App iconified\n");
-                    }
-                }
-            }
-            break;
-                    
-            case SDL_MOUSEBUTTONDOWN: {
-                Uint8 *keys;
 
-                keys = SDL_GetKeyState(NULL);
-                if ( keys[SDLK_ESCAPE] == SDL_PRESSED ) {
-                    printf("Bye bye...\n");
-                    exit(0);
-                }
-                printf("Mouse button pressed\n");
-				board->mousePressed(event.motion.x, event.motion.y);
-            }
-            break;
+			board->update((dt - currentTime)  *0.001);
+			board->render();
+			currentTime = dt;
+		}
 
-            case SDL_QUIT: {
-                printf("Quit requested, quitting.\n");
 
-				delete board;
-                exit(0);
-            }
-            break;
-        }
+		//Sleep(250);
+		
     }
     /* This should never happen */
     printf("SDL_WaitEvent error: %s\n", SDL_GetError());

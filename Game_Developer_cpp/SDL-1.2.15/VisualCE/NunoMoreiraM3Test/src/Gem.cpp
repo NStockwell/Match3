@@ -10,7 +10,7 @@ Gem::Gem(int type, char* imageFile)
 	mDrawingScreen = NULL;
 	
 	mVisible = true;
-
+	mDirty = true;
 	mImageFilename = std::string(imageFile);
 }
 
@@ -18,10 +18,34 @@ Gem::~Gem()
 {
 }
 
-void Gem::setPosition(int x, int y)
+
+	void Gem::dirty()
+	{
+		mDirty = true;
+	}
+	void Gem::undirty()
+	{
+		mDirty = false;
+	}
+
+void Gem::setPosition(float x, float y)
 {
 	mPosition.setX(x);
 	mPosition.setY(y);
+	dirty();
+	
+}
+
+void Gem::incPosition(float x, float y)
+{
+	mPosition.setX(mPosition.getX() + x);
+	mPosition.setY(mPosition.getY() + y);
+	dirty();
+}
+
+Point Gem::getPosition()
+{
+	return mPosition;
 }
 
 void Gem::init()
@@ -39,6 +63,7 @@ void Gem::init()
 void Gem::setScreen(SDL_Surface *screen)
 {
 	mDrawingScreen = screen;
+	dirty();
 }
 
 
@@ -69,7 +94,7 @@ void Gem::render()
 
 void Gem::render(int x, int y)
 {
-	if(!mInitialized || !mVisible)
+	if(!mInitialized || !mVisible || !mDirty)
 		return;
 
 	SDL_Rect dest;
@@ -82,6 +107,9 @@ void Gem::render(int x, int y)
 	SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
 
 	SDL_UpdateRects(mDrawingScreen, 1, &dest);
+	
+	undirty();
+
 }
 
 void Gem::update(float dt)

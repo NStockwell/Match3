@@ -2,7 +2,7 @@
 #include "Point.h"
 
 
-Point::Point(int x, int y)
+Point::Point(float x, float y)
 {
 	mX = x;
 	mY = y;
@@ -15,22 +15,28 @@ Point::Point()
 Point::~Point()
 {}
 
-void Point::setX(int nX)
+
+void Point::setX(float nX)
 {
 	mX = nX;
 }
 
-void Point::setY(int nY)
+void Point::setY(float nY)
 {
 	mY = nY;
 }
 
-int Point::getX()
+float Point::getX() const
 {
 	return mX;
 }
 
-int Point::getY()
+float Point::getY() const
 {
 	return mY;
+}
+
+float Point::getLength()
+{
+	return sqrt(mX*mX + mY*mY);
 }

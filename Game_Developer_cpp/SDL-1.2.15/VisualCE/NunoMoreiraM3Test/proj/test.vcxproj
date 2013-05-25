@@ -15,11 +15,13 @@
     <ClCompile Include="..\include\Gem.h" />
     <ClCompile Include="..\src\Board.cpp" />
     <ClCompile Include="..\src\Gem.cpp" />
+    <ClCompile Include="..\src\GemAnimator.cpp" />
     <ClCompile Include="..\src\GemManager.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\GemAnimator.h" />
     <ClInclude Include="..\include\GemManager.h" />
     <ClInclude Include="..\include\GemMatchManager.h" />
     <ClInclude Include="..\include\Point.h" />

@@ -14,6 +14,7 @@
     <ClCompile Include="..\include\Board.h" />
     <ClCompile Include="..\include\Gem.h" />
     <ClCompile Include="..\src\Board.cpp" />
+    <ClCompile Include="..\src\GameManager.cpp" />
     <ClCompile Include="..\src\Gem.cpp" />
     <ClCompile Include="..\src\GemAnimator.cpp" />
     <ClCompile Include="..\src\GemManager.cpp" />
@@ -22,6 +23,7 @@
     <ClCompile Include="Point.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\GameManager.h" />
     <ClInclude Include="..\include\GemAnimator.h" />
     <ClInclude Include="..\include\GemManager.h" />
     <ClInclude Include="..\include\GemMatchManager.h" />

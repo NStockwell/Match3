@@ -24,6 +24,9 @@ public:
 	int addGem(int type, char* filename);
 	Gem* getGem(int type);
 	Gem* getRandomTypeGem();
+	void changeGemType(Gem* g, int type);
+	
+	void changeGemToRandomType(Gem* g);
 
 
 private:

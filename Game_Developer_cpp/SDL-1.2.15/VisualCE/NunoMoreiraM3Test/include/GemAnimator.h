@@ -15,6 +15,7 @@ public:
 	void update(float dt);
 	
 	bool getFinished();
+	Gem* getGem();
 
 private:
 	float mTimePassed;

@@ -27,8 +27,24 @@ Gem* GemManager::getGem(int type)
 
 Gem* GemManager::getRandomTypeGem()
 {
-	
-
 	return getGem( rand()%this->mGems.size() );
+}
+
+
+void GemManager::changeGemToRandomType(Gem* g)
+{
+	changeGemType(g, rand()%this->mGems.size() );
+}
+
+void GemManager::changeGemType(Gem* g, int type)
+{
+	g->setType(type);
+	for(int i = 0; i < mGems.size(); i++)
+	{
+		if(this->mGems[i].getType() == type)
+		{
+			g->setImageFile((char*)this->mGems[i].getImagefilename().c_str());
+		}
+	}
 }
 

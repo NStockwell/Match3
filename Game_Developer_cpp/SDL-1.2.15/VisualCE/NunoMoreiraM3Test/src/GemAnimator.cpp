@@ -14,6 +14,11 @@
 	{
 		return mFinished;
 	}
+	
+	Gem* GemAnimator::getGem()
+	{
+		return mGem;
+	}
 
 	void GemAnimator::moveTo(Gem* g, Point dest, float timeInterval)
 	{

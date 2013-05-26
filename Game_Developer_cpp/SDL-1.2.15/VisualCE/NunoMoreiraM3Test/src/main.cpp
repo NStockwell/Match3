@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
 		{
 
 			dt = SDL_GetTicks();
-			printf("temp (%d)\n", dt - currentTime);
+			//printf("temp (%d)\n", dt - currentTime);
         
 
 			board->update((dt - currentTime)  *0.001);

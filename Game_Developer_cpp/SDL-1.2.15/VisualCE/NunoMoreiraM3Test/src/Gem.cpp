@@ -36,6 +36,23 @@ void Gem::setPosition(float x, float y)
 	
 }
 
+void Gem::setType(int type)
+{
+	mType = type;
+}
+	
+void Gem::setImageFile(char* filename)
+{
+	mImageFilename = std::string(filename);
+	mBackground = IMG_Load(mImageFilename.c_str());
+	if(mBackground == NULL)
+	{
+		fprintf(stderr, "Couldn't load %s: %s\n", mImageFilename, SDL_GetError());
+		return;
+	}
+	dirty();
+}
+
 void Gem::incPosition(float x, float y)
 {
 	mPosition.setX(mPosition.getX() + x);

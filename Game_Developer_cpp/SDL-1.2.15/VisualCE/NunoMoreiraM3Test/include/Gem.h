@@ -20,6 +20,8 @@ public:
 	void init();
 	void setScreen(SDL_Surface *screen);
 	void setVisible(bool visible);
+	void setType(int type);
+	void setImageFile(char* filename);
 
 	void render();
 	void render(int x, int y);

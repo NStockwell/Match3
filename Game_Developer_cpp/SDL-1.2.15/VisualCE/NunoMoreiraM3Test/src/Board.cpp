@@ -246,6 +246,14 @@ void Board::makeMatches()
 	if(mStoredMatches.empty())
 		return;
 
+	for(int i = 0; i < mStoredMatches.size(); i++)
+	{
+		Point matchedGemPoint = mStoredMatches.at(i);
+		Gem* g = mTiles[XYCoordinatesToIndex(matchedGemPoint)];
+		g->setVisible(false);
+		GemManager::getInstance().changeGemToRandomType(g);
+	}
+
 	for(int i = 0; i < mColumns; i++)
 	{
 		int xIndex = i;
@@ -268,6 +276,15 @@ void Board::makeMatches()
 				(mTiles.at(XYCoordinatesToIndex(xIndex,(j + occurrencesInColumn) % (mMatchingInfo.lowestGemPosition[xIndex] +1)))->getPosition() ));
 		}
 	}
+
+	for(int i = 0; i < mStoredMatches.size(); i++)
+	{
+		Point matchedGemPoint = mStoredMatches.at(i);
+		Gem* g = mTiles[XYCoordinatesToIndex(matchedGemPoint)];
+		g->setVisible(true);
+	}
+
+
 	clearNumberMatchesInColumns();
 	mStoredMatches.clear();
 }

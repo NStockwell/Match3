@@ -51,10 +51,12 @@ private:
 	int mColumns;
 	int mTotalElements;
 	int mNumGemTypes;
+	float mAnimationTime;
 	bool mInitialized;
 	bool mAnimating;
 	bool mSwitching;
 	bool mUndoSwitch;
+	bool mMatchesMade;
 	Point mPosition;
 	Point mSize;
 	Point mGemSize;
@@ -87,8 +89,8 @@ private:
 	vector<Point> checkForMatches(Point p);
 	void storeMatches(vector<Point> matches);
 	void makeMatches();
-	vector<Point> getNeighbours(Point p);
-
+	void checkCombos();
+	
 	Point isUpNeighbourTheSameType(Point p);
 	Point isDownNeighbourTheSameType(Point p);
 	Point isLeftNeighbourTheSameType(Point p);
@@ -100,6 +102,7 @@ private:
 
 
 	
+	void mergeMatches(vector<Point> *dest, vector<Point> src);
 	void clearNumberMatchesInColumns();
 };
 

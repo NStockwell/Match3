@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 
 
 	board = new Board(8,8,/*"assets\\art\\board\\BackGround.jpg",*/5,Point(35,35));
-	board->setPosition(330,100);
+	board->setPosition(360,140);
 	board->setScreen(screen);
 	board->init();
 	

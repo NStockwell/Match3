@@ -4,6 +4,7 @@
 
 Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, Point gemSize)
 {
+	mAnimationTime = 0.01;
 
 	/*mBackgroundFileName = std::string(backgroundFile);*/
 	
@@ -22,6 +23,7 @@ Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, P
 	mSwitching = false;
 	mUndoSwitch = false;
 	mAnimating = false;
+	mMatchesMade = false;
 	mGemSize = gemSize;
 
 	mSize.setX(mColumns * mGemSize.getX());
@@ -75,6 +77,15 @@ void Board::init()
 		mTiles[i]->setScreen(mDrawingScreen);
 		mTiles[i]->init();
 	}
+
+
+	for(int i = 0; i < mColumns; i++)
+	{
+		mMatchingInfo.numberMatchesInColumn[i] = 1;
+		mMatchingInfo.lowestGemPosition[i] = mRows-1;
+	}
+	checkCombos();
+	makeMatches();
 
 	mInitialized = true;
 }
@@ -149,13 +160,23 @@ void Board::mousePressed(int x, int y)
 	if(mSelectedGemIndex != NULL_POINT && distance.getLength() == 1)
 	{
 		switchGems(mSelectedGemIndex, xy);
-		mSelectedGemIndex.setX(-1);// = NULL;
+		mSelectedGemIndex = NULL_POINT;
 	}
 	else
 	{
 		mSelectedGemIndex = xy;// = mTiles[index];
 	}
 	mTiles[index]->mousePressed(true); 
+}
+
+void Board::mergeMatches(vector<Point> *dest, vector<Point> src)
+{
+	for(int i = 0; i < src.size(); i++)
+		{
+			vector<Point>::iterator it = std::find(dest->begin(), dest->end(), src.at(i));
+			if(it == dest->end())
+				dest->push_back(src.at(i));
+		}
 }
 
 void Board::switchGems(Point p1, Point p2, bool reverting, bool animate)
@@ -177,12 +198,7 @@ void Board::switchGems(Point p1, Point p2, bool reverting, bool animate)
 		vector<Point> matches = checkForMatches(p1);	
 		vector<Point> matchesP2 = checkForMatches(p2);
 
-		for(int i = 0; i < matchesP2.size(); i++)
-		{
-			vector<Point>::iterator it = std::find(matches.begin(), matches.end(), matchesP2.at(i));
-			if(it == matches.end())
-				matches.push_back(matchesP2.at(i));
-		}
+		mergeMatches(&matches, matchesP2);
 
 		if(matches.size() == 0)
 		{
@@ -244,8 +260,12 @@ void Board::makeMatches()
 {
 	Point p;
 	if(mStoredMatches.empty())
+	{
+		mAnimationTime = 0.4;
+		mMatchesMade = false;
 		return;
-
+	}
+	mMatchesMade = true;
 	for(int i = 0; i < mStoredMatches.size(); i++)
 	{
 		Point matchedGemPoint = mStoredMatches.at(i);
@@ -277,22 +297,46 @@ void Board::makeMatches()
 		}
 	}
 
-	for(int i = 0; i < mStoredMatches.size(); i++)
+	/*for(int i = 0; i < mStoredMatches.size(); i++)
 	{
 		Point matchedGemPoint = mStoredMatches.at(i);
 		Gem* g = mTiles[XYCoordinatesToIndex(matchedGemPoint)];
 		g->setVisible(true);
-	}
+	}*/
 
 
-	clearNumberMatchesInColumns();
 	mStoredMatches.clear();
+
+}
+
+void Board::checkCombos()
+{
+	mMatchesMade = false;
+	vector<Point> comboMatches;
+	for(int i = 0; i < mColumns; i++)
+	{
+		if(mMatchingInfo.numberMatchesInColumn[i] == 0)
+			continue;
+
+		for(int j = 0; j <= mMatchingInfo.lowestGemPosition[i]; j++)
+		{
+			Point modifiedGemPoint = Point(i,j);// mStoredMatches.at(i);
+			Gem* g = mTiles[XYCoordinatesToIndex(modifiedGemPoint)];
+			g->setVisible(true);
+			mergeMatches(&comboMatches, checkForMatches(modifiedGemPoint ) );
+		}
+	}
+	
+	clearNumberMatchesInColumns();
+	
+	if(comboMatches.size() > 0)
+		storeMatches(comboMatches);
 }
 
 void Board::moveGem(Gem* g, Point p)
 {
 	GemAnimator* ga1 = new GemAnimator();
-	ga1->moveTo(g,p,0.25);
+	ga1->moveTo(g,p,mAnimationTime);
 	mAnimations.push_back(ga1);
 }
 
@@ -335,6 +379,11 @@ void Board::update(float dt)
 	}
 	if(mAnimations.size() == 0 && finishedAnimationsIndexes.size() != 0)
 	{
+		if(mMatchesMade)
+		{
+			checkCombos();
+		}
+
 		makeMatches();
 	}
 
@@ -455,7 +504,7 @@ Point Board::isNeighbourTheSameType(Point current, Point neighbour)
 		if(isSameType(currentGem,upperGem))
 			return neighbour;
 	}
-	return Point(-1,-1);
+	return NULL_POINT;// Point(-1,-1);
 }
 
 
@@ -485,26 +534,3 @@ bool Board::isSameType(Gem* g1, Gem* g2)
 	return g1->getType() == g2->getType();
 }
 
-vector<Point> Board::getNeighbours(Point p)
-{
-	vector<Point> neighbours;
-
-	Point pLeft = Point(p.getX() -1, p.getY());
-	Point pRight = Point(p.getX() +1, p.getY());
-	Point pUp = Point(p.getX(), p.getY() -1);
-	Point pDown = Point(p.getX(), p.getY() +1);
-
-	if(existsIndex(pLeft))
-		neighbours.push_back(pLeft);
-
-	if(existsIndex(pRight))
-		neighbours.push_back(pRight);
-
-	if(existsIndex(pUp))
-		neighbours.push_back(pUp);
-
-	if(existsIndex(pDown))
-		neighbours.push_back(pDown);
-
-	return neighbours;
-}

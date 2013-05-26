@@ -2,6 +2,8 @@
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 
+
+//#include "SoundManager.h"
 #include "Board.h"
 #include "Point.h"
 #include "GemManager.h"
@@ -17,6 +19,7 @@ public:
 	~GameManager();
 	void render();
 	void update(float dt);
+	void start();
 
 private:
 	enum State{ PreGame, InGame, PausedGame, PostGame };
@@ -26,6 +29,8 @@ private:
 	
 	SDL_Rect dest;
 	SDL_Surface *mBackground;
+	SDL_Surface *mIntro;
+	SDL_Surface *mOutro;
 	SDL_Surface *mDrawingScreen;
 
 	

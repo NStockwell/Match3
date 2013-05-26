@@ -26,10 +26,8 @@
     <ClInclude Include="..\include\GameManager.h" />
     <ClInclude Include="..\include\GemAnimator.h" />
     <ClInclude Include="..\include\GemManager.h" />
-    <ClInclude Include="..\include\GemMatchManager.h" />
     <ClInclude Include="..\include\GraphicObject.h" />
     <ClInclude Include="..\include\Point.h" />
-    <ClInclude Include="..\src\GemMatchManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3F63A72B-949B-4F72-A93F-FA25E693496F}</ProjectGuid>
@@ -97,6 +95,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\include</AdditionalIncludeDirectories>
+      <ObjectFileName>$(IntDir)/%(RelativeDir)/</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

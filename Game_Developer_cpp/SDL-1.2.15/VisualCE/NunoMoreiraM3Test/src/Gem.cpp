@@ -43,7 +43,7 @@ void Gem::render()
 
 	SDL_BlitSurface(mImage, NULL, mDrawingScreen, &dest);
 
-	SDL_UpdateRects(mDrawingScreen, 1, &dest);
+	//SDL_UpdateRects(mDrawingScreen, 1, &dest);
 	
 	undirty();
 }

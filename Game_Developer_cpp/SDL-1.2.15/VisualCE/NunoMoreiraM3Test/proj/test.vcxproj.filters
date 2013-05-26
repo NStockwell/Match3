@@ -53,12 +53,6 @@
     <ClInclude Include="..\include\GemManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\GemMatchManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\GemMatchManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\GemAnimator.h">
       <Filter>Header Files</Filter>
     </ClInclude>

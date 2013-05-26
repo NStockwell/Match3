@@ -25,9 +25,9 @@ GraphicObject::GraphicObject(Point pos, char* fileName)
 }
 	GraphicObject::~GraphicObject()
 	{
-		
-
+		SDL_FreeSurface(mImage);
 	}
+
 	void GraphicObject::init()
 	{
 		setImage((char*)mImageFileName.c_str());

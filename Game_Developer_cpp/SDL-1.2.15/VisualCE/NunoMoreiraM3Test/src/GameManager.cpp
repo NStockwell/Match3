@@ -5,7 +5,6 @@ GameManager::GameManager(SDL_Surface* screen)
 {
 	mDrawingScreen = screen;
 	mState = PreGame;
-	mBoard = new Board(8,8,5,Point(35,35));
 
 	mTimePlayed = 0.0f;
 
@@ -15,7 +14,19 @@ GameManager::GameManager(SDL_Surface* screen)
 		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\board\\BackGround.jpg", SDL_GetError());
 		return;
 	}
-
+	mIntro = IMG_Load("assets\\art\\Intro.jpg");
+	if(mIntro == NULL)
+	{
+		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\Intro.jpg", SDL_GetError());
+		return;
+	}
+	
+	mOutro = IMG_Load("assets\\art\\Outro.jpg");
+	if(mIntro == NULL)
+	{
+		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\Outro.jpg", SDL_GetError());
+		return;
+	}
 		
 	GemManager::getInstance().addGem(0,"assets/art/Gems/green.png");
 	GemManager::getInstance().addGem(1,"assets/art/Gems/blue.png");
@@ -29,7 +40,7 @@ GameManager::GameManager(SDL_Surface* screen)
 	dest.h = mBackground->h;
 
 
-	mBoard = new Board(8,8,/*"assets\\art\\board\\BackGround.jpg",*/5,Point(35,35));
+	mBoard = new Board(8, 8, 5, Point(35,35));
 	mBoard->setPosition(Point(360,140));
 	mBoard->setScreen(screen);
 
@@ -38,29 +49,57 @@ GameManager::GameManager(SDL_Surface* screen)
 GameManager::~GameManager()
 {
 	delete mBoard;
+	SDL_FreeSurface(mBackground);
+	SDL_FreeSurface(mIntro);
+	SDL_FreeSurface(mOutro);
+}
+
+void GameManager::start()
+{
+	unsigned int dt = SDL_GetTicks();
+	unsigned int currentTime = dt;
+	
+	while(1)
+	{
+		dt = SDL_GetTicks();
+		update((dt - currentTime)  *0.001);
+		render();
+		
+		currentTime = dt;
+    }
 }
 
 void GameManager::render()
 {
 	switch(mState)
 	{
+		case PreGame:
+		{
+			SDL_BlitSurface(mIntro, NULL, mDrawingScreen, &dest);
+			break;
+		}
 		case InGame:
 		{
-			if(mBoard->isAnimating())
+			//if(mBoard->isAnimating())
 			{
 				SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
-				SDL_UpdateRects(mDrawingScreen, 1, &dest);
 			}
 			mBoard->render();
+			break;
+		}
+		case PostGame:
+		{
+			SDL_BlitSurface(mOutro, NULL, mDrawingScreen, &dest);
 			break;
 		}
 		default:
 		{
 			SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
-			SDL_UpdateRects(mDrawingScreen, 1, &dest);
 			break;
 		}
 	}
+	
+	SDL_Flip(mDrawingScreen);
 }
 
 void GameManager::update(float dt)

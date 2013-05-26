@@ -33,10 +33,12 @@ int main(int argc, char *argv[])
     SDL_EventState(SDL_KEYDOWN, SDL_IGNORE);
     SDL_EventState(SDL_KEYUP, SDL_IGNORE);
 
+	SDL_WM_SetCaption("Nuno Moreira M3 Test for King","");
+
 
     /* The mouse isn't much use unless we have a display for reference */
-    if ( (screen = SDL_SetVideoMode(800, 600, 8, 0)) == NULL ) {
-        fprintf(stderr, "Couldn't set 800*600*8 video mode: %s\n",
+    if ( (screen = SDL_SetVideoMode(755, 600, 8, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL ) {
+        fprintf(stderr, "Couldn't set 755*600*8 video mode: %s\n",
                         SDL_GetError());
         exit(1);
     }
@@ -44,23 +46,12 @@ int main(int argc, char *argv[])
 
 	GameManager* gm = new GameManager(screen);
 	
-
-
+	gm->start();
 	
 
-	unsigned int dt = SDL_GetTicks();
-	unsigned int currentTime = dt;
-	
-	
-	while(1)
-	{
-		dt = SDL_GetTicks();
-		gm->update((dt - currentTime)  *0.001);
-		gm->render();
-		
-		currentTime = dt;
-    }
-    /* This should never happen */
-    printf("SDL_WaitEvent error: %s\n", SDL_GetError());
+	delete gm;
+
+	SDL_FreeSurface(screen);
+
     exit(1);
 }

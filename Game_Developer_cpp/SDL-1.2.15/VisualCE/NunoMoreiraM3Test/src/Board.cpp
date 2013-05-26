@@ -2,12 +2,10 @@
 #include "Board.h"
 
 
-Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, Point gemSize)
+Board::Board(int rows, int columns, int numGemTypes, Point gemSize):GraphicObject()
 {
 	mAnimationTime = 0.01;
 
-	/*mBackgroundFileName = std::string(backgroundFile);*/
-	
 	mRows = rows;
 	mColumns = columns;
 
@@ -17,21 +15,16 @@ Board::Board(int rows, int columns, /*char* backgroundFile, */int numGemTypes, P
 
 	mTiles = std::vector<Gem*>(mTotalElements);
 	
-	mDrawingScreen = NULL;
-
-	mInitialized = false;
 	mSwitching = false;
 	mUndoSwitch = false;
 	mAnimating = false;
 	mMatchesMade = false;
 	mGemSize = gemSize;
 
-	mSize.setX(mColumns * mGemSize.getX());
-	mSize.setY(mRows * mGemSize.getY());
+	setSize( Point(mColumns * mGemSize.getX(), mRows * mGemSize.getY()) );
+
 
 	mSelectedGemIndex = NULL_POINT;
-	//mSelectedGemIndex.setX(-1);// = NULL;
-	//mSelectedGemIndex.setY(-1);
 	
 }
 
@@ -64,6 +57,8 @@ void Board::init()
 	gemsAssets.push_back("assets/art/Gems/yellow.png");
 	gemsAssets.push_back("assets/art/Gems/purple.png");*/
 
+	GraphicObject::init();
+
 	mMatchingInfo.numberMatchesInColumn = new int[mColumns];
 	mMatchingInfo.lowestGemPosition = new int[mColumns];
 
@@ -73,7 +68,7 @@ void Board::init()
 		
 		//int type = rand() % mNumGemTypes;
 		mTiles[i] = GemManager::getInstance().getRandomTypeGem();//new Gem(type, (char*)gemsAssets.at(type).c_str());
-		mTiles[i]->setPosition(mPosition.getX() + (i%mColumns) * mGemSize.getX(), mPosition.getY() + (i/mRows) * mGemSize.getY() );
+		mTiles[i]->setPosition( Point(mPosition.getX() + (i%mColumns) * mGemSize.getX(), mPosition.getY() + (i/mRows) * mGemSize.getY()) );
 		mTiles[i]->setScreen(mDrawingScreen);
 		mTiles[i]->init();
 	}
@@ -119,12 +114,6 @@ bool Board::insideBoundaries(int x, int y)
 	}
 
 
-void Board::setPosition(int x, int y)
-{
-	mPosition.setX(x);
-	mPosition.setY(y);
-}
-
 Point Board::coordinateToIndex(int x, int y)
 {
 	int indexX = (int)((x - mPosition.getX()) / mGemSize.getX());
@@ -145,28 +134,6 @@ int Board::XYCoordinatesToIndex(Point p)
 int Board::XYCoordinatesToIndex(int x, int y)
 {
 	return x + y*mColumns;
-}
-
-void Board::mousePressed(int x, int y)
-{
-	if(!insideBoundaries(x,y) || mSwitching)
-		return;
-	
-	Point xy = coordinateToIndex(x,y);
-	int index = XYCoordinatesToIndex(xy);
-
-	Point distance = mSelectedGemIndex - xy;
-
-	if(mSelectedGemIndex != NULL_POINT && distance.getLength() == 1)
-	{
-		switchGems(mSelectedGemIndex, xy);
-		mSelectedGemIndex = NULL_POINT;
-	}
-	else
-	{
-		mSelectedGemIndex = xy;// = mTiles[index];
-	}
-	mTiles[index]->mousePressed(true); 
 }
 
 void Board::mergeMatches(vector<Point> *dest, vector<Point> src)
@@ -297,16 +264,7 @@ void Board::makeMatches()
 		}
 	}
 
-	/*for(int i = 0; i < mStoredMatches.size(); i++)
-	{
-		Point matchedGemPoint = mStoredMatches.at(i);
-		Gem* g = mTiles[XYCoordinatesToIndex(matchedGemPoint)];
-		g->setVisible(true);
-	}*/
-
-
 	mStoredMatches.clear();
-
 }
 
 void Board::checkCombos()
@@ -347,11 +305,32 @@ void Board::mouseOver(int x, int y)
 	
 	Point index = coordinateToIndex(x,y);
 	
-	mTiles[index.getX() + index.getY()*mColumns]->mouseOver(true); 
+	mTiles[index.getX() + index.getY()*mColumns]->mouseOver(x,y); 
 }
+void Board::mousePressed(int x, int y)
+{
+	if(!insideBoundaries(x,y) || mSwitching)
+		return;
+	
+	Point xy = coordinateToIndex(x,y);
+	int index = XYCoordinatesToIndex(xy);
 
+	Point distance = mSelectedGemIndex - xy;
+
+	if(mSelectedGemIndex != NULL_POINT && distance.getLength() == 1)
+	{
+		switchGems(mSelectedGemIndex, xy);
+		mSelectedGemIndex = NULL_POINT;
+	}
+	else
+	{
+		mSelectedGemIndex = xy;// = mTiles[index];
+	}
+	mTiles[index]->mousePressed(x,y); 
+}
 void Board::update(float dt)
 {
+	GraphicObject::update(dt);
 	if(!mInitialized)
 		return;
 
@@ -386,48 +365,20 @@ void Board::update(float dt)
 
 		makeMatches();
 	}
-
-
 }
 
 void Board::render()
-{
-	render(mPosition.getX(), mPosition.getY());
-}
-
-void Board::render(int x, int y)
-{
+{	
+	GraphicObject::render();
 	if(!mInitialized)
 		return;
 
-	/*SDL_Rect dest;
-
-	dest.x = x;
-	dest.y = y;
-	dest.w = mBackground->w;
-	dest.h = mBackground->h;*/
-
-	//SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
-
 	for(int i = 0; i < mTotalElements; i++)
 	{
-		mTiles[i]->render( );//(i%mColumns) * mGemSize.getX(), ((int)(i/mRows))*mGemSize.getY()); 
+		mTiles[i]->render( ); 
 	}
-
-	//SDL_UpdateRects(mDrawingScreen, 1, &dest);
 }
 
-void Board::setScreen(SDL_Surface *screen)
-{
-	mDrawingScreen = screen;
-}
-
-
-
-bool Board::hasMatches()
-{
-	return false;
-}
 
 vector<Point> Board::checkForMatches(Point p)
 {
@@ -510,22 +461,22 @@ Point Board::isNeighbourTheSameType(Point current, Point neighbour)
 
 Point Board::isUpNeighbourTheSameType(Point p)
 {
-	Point pUp = p + Point(0, -1);//  Point( p.getX(), p.getY()-1);
+	Point pUp = p + Point(0, -1);
 	return isNeighbourTheSameType(p, pUp);
 }
 Point Board::isDownNeighbourTheSameType(Point p)
 {
-	Point pDown = p + Point(0, 1) ;// Point(p.getX(), p.getY() +1);
+	Point pDown = p + Point(0, 1) ;
 	return isNeighbourTheSameType(p, pDown);
 }
 Point Board::isLeftNeighbourTheSameType(Point p)
 {
-	Point pLeft = p + Point(-1,0);//Point(p.getX()-1, p.getY());
+	Point pLeft = p + Point(-1,0);
 	return isNeighbourTheSameType(p, pLeft);
 }
 Point Board::isRightNeighbourTheSameType(Point p)
 {
-	Point pRight = p + Point(1,0);//Point(p.getX()+1, p.getY());
+	Point pRight = p + Point(1,0);
 	return isNeighbourTheSameType(p, pRight);
 }
 

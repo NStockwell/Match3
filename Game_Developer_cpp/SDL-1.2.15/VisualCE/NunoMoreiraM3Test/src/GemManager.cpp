@@ -18,7 +18,7 @@ Gem* GemManager::getGem(int type)
 	{
 		if(this->mGems[i].getType() == type)
 		{
-			Gem* newGem = new Gem(this->mGems[i].getType(), (char*)this->mGems[i].getImagefilename().c_str());
+			Gem* newGem = new Gem(this->mGems[i].getType(), (char*)this->mGems[i].getImageFilename().c_str());
 			return newGem;
 		}
 	}
@@ -43,7 +43,7 @@ void GemManager::changeGemType(Gem* g, int type)
 	{
 		if(this->mGems[i].getType() == type)
 		{
-			g->setImageFile((char*)this->mGems[i].getImagefilename().c_str());
+			g->setImage((char*)this->mGems[i].getImageFilename().c_str());
 		}
 	}
 }

@@ -8,7 +8,7 @@
 #include "Point.h"
 #include "GemManager.h"
 #include "GemAnimator.h"
-
+#include "GraphicObject.h"
 
 #include "SDL.h"
 #include "SDL_image.h"
@@ -30,20 +30,17 @@ struct MatchingInfo
 	int* lowestGemPosition;
 };
 
-class Board
+class Board : public GraphicObject
 {
 
 public:
-	Board(int r, int c, /*char* backgroundFile,*/ int numGemTypes, Point gemSize);
+	Board(int r, int c, int numGemTypes, Point gemSize);
 	~Board();
-	void setScreen(SDL_Surface *screen);
 	void update(float dt);
 	void render();
-	void render(int x, int y);
 	void init();
 	void mouseOver(int x, int y);
 	void mousePressed(int x, int y);
-	void setPosition(int x, int y);
 	bool isAnimating();
 
 private:
@@ -52,19 +49,16 @@ private:
 	int mTotalElements;
 	int mNumGemTypes;
 	float mAnimationTime;
-	bool mInitialized;
+	
 	bool mAnimating;
 	bool mSwitching;
 	bool mUndoSwitch;
 	bool mMatchesMade;
-	Point mPosition;
-	Point mSize;
+	
 	Point mGemSize;
 	Undo mUndo;
 	MatchingInfo mMatchingInfo;
-	/*std::string mBackgroundFileName;*/
-	/*SDL_Surface *mBackground;*/
-	SDL_Surface *mDrawingScreen;
+
 	std::vector<Gem*> mTiles;
 	vector<GemAnimator*> mAnimations;
 	vector<Point> mStoredMatches;
@@ -85,7 +79,6 @@ private:
 	void moveGem(Gem* g, Point p);
 	
 
-	bool hasMatches();
 	vector<Point> checkForMatches(Point p);
 	void storeMatches(vector<Point> matches);
 	void makeMatches();

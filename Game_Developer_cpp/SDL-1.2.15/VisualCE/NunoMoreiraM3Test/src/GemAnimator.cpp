@@ -44,8 +44,8 @@
 		}
 		
 		if(mGem != NULL)
-			mGem->setPosition(mInitialPosition.getX() + (mTimePassed/mTimeInterval) *mDistance.getX(),
-								mInitialPosition.getY() + (mTimePassed/mTimeInterval) *mDistance.getY());
+			mGem->setPosition( Point(mInitialPosition.getX() + (mTimePassed/mTimeInterval) *mDistance.getX(),
+								mInitialPosition.getY() + (mTimePassed/mTimeInterval) *mDistance.getY()));
 		else
 			mFinished = true;
 	}

@@ -4,6 +4,7 @@
 
 Board::Board(int rows, int columns, int numGemTypes, Point gemSize):GraphicObject()
 {
+	mInitializing = false;
 	mAnimationTime = 0.01;
 
 	mRows = rows;
@@ -21,7 +22,7 @@ Board::Board(int rows, int columns, int numGemTypes, Point gemSize):GraphicObjec
 	mMatchesMade = false;
 	mGemSize = gemSize;
 
-	setSize( Point(mColumns * mGemSize.getX(), mRows * mGemSize.getY()) );
+	mMousePressed = false;
 
 
 	mSelectedGemIndex = NULL_POINT;
@@ -41,23 +42,11 @@ Board::~Board()
 
 void Board::init()
 {
-	/*mBackground = IMG_Load(mBackgroundFileName.c_str());
-	if(mBackground == NULL)
-	{
-		fprintf(stderr, "Couldn't load %s: %s\n", mBackgroundFileName, SDL_GetError());
-		return;
-	}
-
-	srand (time(NULL));
-
-	vector<string> gemsAssets;
-	gemsAssets.push_back("assets/art/Gems/green.png");
-	gemsAssets.push_back("assets/art/Gems/blue.png");
-	gemsAssets.push_back("assets/art/Gems/red.png");
-	gemsAssets.push_back("assets/art/Gems/yellow.png");
-	gemsAssets.push_back("assets/art/Gems/purple.png");*/
-
 	GraphicObject::init();
+	mInitializing = true;
+
+	
+	setSize( Point(mColumns * mGemSize.getX(), mRows * mGemSize.getY()) );
 
 	mMatchingInfo.numberMatchesInColumn = new int[mColumns];
 	mMatchingInfo.lowestGemPosition = new int[mColumns];
@@ -83,6 +72,17 @@ void Board::init()
 	makeMatches();
 
 	mInitialized = true;
+	
+}
+
+void Board::finishInitializing()
+{
+	mInitializing = false;
+	for(int i = 0; i < mTotalElements; i++)
+	{
+		mTiles.at(i)->setVisible(true);
+	}
+
 }
 
 bool Board::isAnimating()
@@ -251,6 +251,7 @@ void Board::makeMatches()
 			}
 	}
 	//Now all matched gems should be at the top
+
 	for(int i = 0; i < mColumns; i++)
 	{
 		int xIndex = i;
@@ -289,6 +290,9 @@ void Board::checkCombos()
 	
 	if(comboMatches.size() > 0)
 		storeMatches(comboMatches);
+	else
+		if(mInitializing)
+			finishInitializing();
 }
 
 void Board::moveGem(Gem* g, Point p)
@@ -300,19 +304,39 @@ void Board::moveGem(Gem* g, Point p)
 
 void Board::mouseOver(int x, int y)
 {
-	if(!insideBoundaries(x,y) || mSwitching)
+	if(!insideBoundaries(x,y) || mSwitching || !mMousePressed)
 		return;
 	
-	Point index = coordinateToIndex(x,y);
+	Point xy = coordinateToIndex(x,y);
+	int index = XYCoordinatesToIndex(xy);
+
+	selecteGemAtPoint(xy);
 	
-	mTiles[index.getX() + index.getY()*mColumns]->mouseOver(x,y); 
+	mTiles[index]->mouseOver(x,y); 
+
 }
 void Board::mousePressed(int x, int y)
 {
 	if(!insideBoundaries(x,y) || mSwitching)
 		return;
 	
+	mMousePressed = true;
+
 	Point xy = coordinateToIndex(x,y);
+	int index = XYCoordinatesToIndex(xy);
+	
+	selecteGemAtPoint(xy);
+	
+	mTiles[index]->mousePressed(x,y); 
+	
+}
+void Board::mouseReleased(int x, int y)
+{
+	mMousePressed = false;
+}
+
+void Board::selecteGemAtPoint(Point xy)
+{
 	int index = XYCoordinatesToIndex(xy);
 
 	Point distance = mSelectedGemIndex - xy;
@@ -321,13 +345,14 @@ void Board::mousePressed(int x, int y)
 	{
 		switchGems(mSelectedGemIndex, xy);
 		mSelectedGemIndex = NULL_POINT;
+		mMousePressed = false;
 	}
 	else
 	{
 		mSelectedGemIndex = xy;// = mTiles[index];
 	}
-	mTiles[index]->mousePressed(x,y); 
 }
+
 void Board::update(float dt)
 {
 	GraphicObject::update(dt);
@@ -369,8 +394,8 @@ void Board::update(float dt)
 
 void Board::render()
 {	
-	GraphicObject::render();
-	if(!mInitialized)
+	//GraphicObject::render();
+	if(!mInitialized || mInitializing)
 		return;
 
 	for(int i = 0; i < mTotalElements; i++)

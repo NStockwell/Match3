@@ -30,6 +30,11 @@ struct MatchingInfo
 	int* lowestGemPosition;
 };
 
+enum AnimationState
+{
+	pullingCellsDown
+};
+
 class Board : public GraphicObject
 {
 
@@ -41,6 +46,11 @@ public:
 	void init();
 	void mouseOver(int x, int y);
 	void mousePressed(int x, int y);
+	void mouseReleased(int x, int y);
+
+	
+	void selecteGemAtPoint(Point p);
+
 	bool isAnimating();
 
 private:
@@ -54,7 +64,9 @@ private:
 	bool mSwitching;
 	bool mUndoSwitch;
 	bool mMatchesMade;
-	
+	bool mInitializing;
+	bool mMousePressed;
+
 	Point mGemSize;
 	Undo mUndo;
 	MatchingInfo mMatchingInfo;
@@ -63,7 +75,8 @@ private:
 	vector<GemAnimator*> mAnimations;
 	vector<Point> mStoredMatches;
 	Point mSelectedGemIndex;
-
+	
+	void finishInitializing();
 
 	bool insideBoundaries(int x, int y);	
 	bool insideBoundaries(Point p);

@@ -47,8 +47,18 @@ int eventHandler(SDL_Event *ev)
 			board->mousePressed(ev->motion.x, ev->motion.y);
         }
         break;
-
-
+		case SDL_MOUSEBUTTONUP:
+			{
+				board->mouseReleased(ev->motion.x, ev->motion.y);
+			}
+			break;
+		case SDL_MOUSEMOTION : {
+				printf("Mouse moved to (%d,%d)\n",
+						ev->motion.x, ev->motion.y);
+				if(board != NULL)
+					board->mouseOver(ev->motion.x, ev->motion.y);
+			}
+			break;
         case SDL_QUIT: {
             printf("Quit requested, quitting.\n");
 

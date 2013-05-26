@@ -23,6 +23,7 @@ public:
 	void render();
 	void mouseOver(int x, int y){};
 	void mousePressed(int x, int y){};
+	void mouseReleased(int x, int y){};
 
 	void setScreen(SDL_Surface* screen);
 	

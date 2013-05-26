@@ -30,6 +30,7 @@ GraphicObject::GraphicObject(Point pos, char* fileName)
 	}
 	void GraphicObject::init()
 	{
+		setImage((char*)mImageFileName.c_str());
 		mInitialized = true;
 	}
 	void GraphicObject::update(float dt)
@@ -77,11 +78,17 @@ GraphicObject::GraphicObject(Point pos, char* fileName)
 	{
 		mImageFileName = string(filename);
 		mImage = IMG_Load(mImageFileName.c_str());
+		if(mImageFileName == "")
+		{
+			fprintf(stderr, "No image\n");// Couldn't load %s: %s\n");
+			return;
+		}
 		if(mImage == NULL)
 		{
 			fprintf(stderr, "Couldn't load %s: %s\n", mImageFileName, SDL_GetError());
 			return;
 		}
+		setSize(Point(mImage->w, mImage->h));
 		dirty();
 	}
 	string  GraphicObject::getImageFilename()

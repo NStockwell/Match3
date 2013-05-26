@@ -38,6 +38,7 @@ void GemManager::changeGemToRandomType(Gem* g)
 
 void GemManager::changeGemType(Gem* g, int type)
 {
+	printf("creating gem with type %d for Gem at position %f %f\n",type, g->getPosition().getX(),g->getPosition().getY());
 	g->setType(type);
 	for(int i = 0; i < mGems.size(); i++)
 	{

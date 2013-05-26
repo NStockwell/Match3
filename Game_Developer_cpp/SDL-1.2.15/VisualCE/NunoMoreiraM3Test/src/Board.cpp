@@ -77,12 +77,12 @@ void Board::init()
 
 void Board::finishInitializing()
 {
+	mAnimationTime = 0.4;
 	mInitializing = false;
 	for(int i = 0; i < mTotalElements; i++)
 	{
 		mTiles.at(i)->setVisible(true);
 	}
-
 }
 
 bool Board::isAnimating()
@@ -103,15 +103,15 @@ bool Board::insideBoundaries(int x, int y)
 }
 
 
-	bool Board::existsIndex(Point p)
-	{
-		return existsIndex(p.getX(), p.getY());
-	}
+bool Board::existsIndex(Point p)
+{
+	return existsIndex(p.getX(), p.getY());
+}
 
-	bool Board::existsIndex(int x, int y)
-	{
-		return (x >=0 && x < mColumns && y>= 0 && y < mRows);
-	}
+bool Board::existsIndex(int x, int y)
+{
+	return (x >=0 && x < mColumns && y>= 0 && y < mRows);
+}
 
 
 Point Board::coordinateToIndex(int x, int y)
@@ -185,6 +185,7 @@ void Board::switchGems(Point p1, Point p2, bool reverting, bool animate)
 void Board::storeMatches(vector<Point> matches)
 {
 	clearNumberMatchesInColumns();
+	//save the number of gems matched in each column and the row of the deepest one
 	for(int i = 0; i < matches.size() ; i++)
     {
 		Point checkForMinimumPoint = matches.at(i);
@@ -195,6 +196,7 @@ void Board::storeMatches(vector<Point> matches)
 			mMatchingInfo.lowestGemPosition[(int)checkForMinimumPoint.getX()] = minimumPointY;
 		}
 	}
+	//bubblesort the list, order is important when pulling the gems up to assure the empties are at the top
 	for(int i = 0; i < matches.size() ; i++)
     {
         for (int j=0; j<matches.size()-i-1;j++)
@@ -228,19 +230,19 @@ void Board::makeMatches()
 	Point p;
 	if(mStoredMatches.empty())
 	{
-		mAnimationTime = 0.4;
 		mMatchesMade = false;
 		return;
 	}
 	mMatchesMade = true;
+	//hide matches and create a new gem
 	for(int i = 0; i < mStoredMatches.size(); i++)
 	{
 		Point matchedGemPoint = mStoredMatches.at(i);
 		Gem* g = mTiles[XYCoordinatesToIndex(matchedGemPoint)];
-		g->setVisible(false);
+		//printf("%f %f ",matchedGemPoint.getX(), matchedGemPoint.getY());
 		GemManager::getInstance().changeGemToRandomType(g);
 	}
-
+	//for every column, start at the deepest match made and pull that up, repeat the number of times matches were made in that column
 	for(int i = 0; i < mColumns; i++)
 	{
 		int xIndex = i;
@@ -251,7 +253,13 @@ void Board::makeMatches()
 			}
 	}
 	//Now all matched gems should be at the top
+	/* A					B
+	*  B    should now be   C  assuming a 3 matches vertical (this is why bubblesort was important on storematches)
+	*  C					D
+	*  D					A
+	*/
 
+	//since all gems have been switched, time to calculate animations
 	for(int i = 0; i < mColumns; i++)
 	{
 		int xIndex = i;
@@ -259,7 +267,6 @@ void Board::makeMatches()
 		
 		for(int j =  mMatchingInfo.lowestGemPosition[xIndex]; j >= 0; j--)
 		{
-			
 			moveGem(mTiles.at(XYCoordinatesToIndex(xIndex,j)) ,
 				(mTiles.at(XYCoordinatesToIndex(xIndex,(j + occurrencesInColumn) % (mMatchingInfo.lowestGemPosition[xIndex] +1)))->getPosition() ));
 		}
@@ -279,9 +286,10 @@ void Board::checkCombos()
 
 		for(int j = 0; j <= mMatchingInfo.lowestGemPosition[i]; j++)
 		{
-			Point modifiedGemPoint = Point(i,j);// mStoredMatches.at(i);
+			Point modifiedGemPoint = Point(i,j);
 			Gem* g = mTiles[XYCoordinatesToIndex(modifiedGemPoint)];
 			g->setVisible(true);
+
 			mergeMatches(&comboMatches, checkForMatches(modifiedGemPoint ) );
 		}
 	}
@@ -300,6 +308,10 @@ void Board::moveGem(Gem* g, Point p)
 	GemAnimator* ga1 = new GemAnimator();
 	ga1->moveTo(g,p,mAnimationTime);
 	mAnimations.push_back(ga1);
+	if(p.getY() < g->getPosition().getY() && mMatchesMade)
+	{//hide the gems that are going upwards
+		g->setVisible(false);
+	}
 }
 
 void Board::mouseOver(int x, int y)

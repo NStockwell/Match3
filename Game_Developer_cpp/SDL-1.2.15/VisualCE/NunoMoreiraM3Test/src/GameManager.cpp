@@ -180,10 +180,7 @@ int GameManager::eventHandler(SDL_Event *ev)
 			}
 			break;	
 		}
-		case SDL_MOUSEMOTION : {
-			printf("Mouse moved to (%d,%d)\n",
-					ev->motion.x, ev->motion.y);
-				
+		case SDL_MOUSEMOTION : {				
 			switch(mState)
 			{
 				case InGame:

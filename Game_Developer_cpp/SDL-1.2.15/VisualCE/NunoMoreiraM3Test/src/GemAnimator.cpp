@@ -15,13 +15,15 @@
 		return mFinished;
 	}
 	
-	Gem* GemAnimator::getGem()
+	GraphicObject* GemAnimator::getGem()
 	{
 		return mGem;
 	}
 
-	void GemAnimator::moveTo(Gem* g, Point dest, float timeInterval)
+	
+	void GemAnimator::moveTo(GraphicObject* g, Point dest, float timeInterval)
 	{
+		//calculate the distance so we can interpolate the position as time goes by
 		mGem = g;
 		mInitialPosition = mGem->getPosition();
 		mDistance = Point(dest.getX() - g->getPosition().getX(),dest.getY() - g->getPosition().getY()) ;
@@ -36,6 +38,8 @@
 
 		mTimePassed += dt;
 
+
+		//avoid passing the time interval
 		if(mTimePassed >= mTimeInterval){
 			mTimePassed = mTimeInterval;
 			dt = mTimeInterval - mTimePassed;
@@ -43,6 +47,7 @@
 			mGem->setVisible(true);
 		}
 		
+		//set the new position according to the time passed in the animation
 		if(mGem != NULL)
 			mGem->setPosition( Point(mInitialPosition.getX() + (mTimePassed/mTimeInterval) *mDistance.getX(),
 								mInitialPosition.getY() + (mTimePassed/mTimeInterval) *mDistance.getY()));

@@ -8,25 +8,18 @@ GameManager::GameManager(SDL_Surface* screen)
 
 	mTimePlayed = 0.0f;
 
-	mBackground = IMG_Load("assets\\art\\board\\BackGround.jpg");
-	if(mBackground == NULL)
-	{
-		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\board\\BackGround.jpg", SDL_GetError());
-		return;
-	}
-	mIntro = IMG_Load("assets\\art\\Intro.jpg");
-	if(mIntro == NULL)
-	{
-		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\Intro.jpg", SDL_GetError());
-		return;
-	}
+	mBackground = new GraphicObject(Point(0,0),"assets\\art\\board\\BackGround.jpg");
+	mBackground->setScreen(screen);
+	mBackground->init();
 	
-	mOutro = IMG_Load("assets\\art\\Outro.jpg");
-	if(mIntro == NULL)
-	{
-		fprintf(stderr, "Couldn't load %s: %s\n", "assets\\art\\Outro.jpg", SDL_GetError());
-		return;
-	}
+	mIntro = new GraphicObject(Point(0,0), "assets\\art\\Intro.jpg");
+	mIntro->setScreen(screen);
+	mIntro->init();
+	mIntro->setVisible(true);
+
+	mOutro = new GraphicObject(Point(0,0), "assets\\art\\Outro.jpg");
+	mOutro->setScreen(screen);
+	mOutro->init();
 		
 	GemManager::getInstance().addGem(0,"assets/art/Gems/green.png");
 	GemManager::getInstance().addGem(1,"assets/art/Gems/blue.png");
@@ -36,8 +29,8 @@ GameManager::GameManager(SDL_Surface* screen)
 
 	dest.x = 0;
 	dest.y = 0;
-	dest.w = mBackground->w;
-	dest.h = mBackground->h;
+	dest.w = mBackground->getSize().getX();//w;
+	dest.h = mBackground->getSize().getY();//h;
 
 
 	mBoard = new Board(8, 8, 5, Point(35,35));
@@ -49,9 +42,9 @@ GameManager::GameManager(SDL_Surface* screen)
 GameManager::~GameManager()
 {
 	delete mBoard;
-	SDL_FreeSurface(mBackground);
-	SDL_FreeSurface(mIntro);
-	SDL_FreeSurface(mOutro);
+	delete mBackground;
+	delete mIntro;
+	delete mOutro;
 }
 
 void GameManager::start()
@@ -75,26 +68,23 @@ void GameManager::render()
 	{
 		case PreGame:
 		{
-			SDL_BlitSurface(mIntro, NULL, mDrawingScreen, &dest);
+			mIntro->render();
 			break;
 		}
 		case InGame:
 		{
-			//if(mBoard->isAnimating())
-			{
-				SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
-			}
+			mBackground->render();
 			mBoard->render();
 			break;
 		}
 		case PostGame:
 		{
-			SDL_BlitSurface(mOutro, NULL, mDrawingScreen, &dest);
+			mOutro->render();
 			break;
 		}
 		default:
 		{
-			SDL_BlitSurface(mBackground, NULL, mDrawingScreen, &dest);
+			mBackground->render();
 			break;
 		}
 	}
@@ -105,17 +95,20 @@ void GameManager::render()
 void GameManager::update(float dt)
 {
 	SDL_Event ev;
+	//Poll events and handle them
 	while(SDL_PollEvent(&ev) > 0)
 	{
 		eventHandler(&ev);
 	}
 	switch(mState)
-	{
-	case InGame:
+	{//update the board only during the InGame state
+		case InGame:
 		{
 			mTimePlayed += dt;
 			if(mTimePlayed >= TIME_TO_PLAY)
 			{
+				mOutro->setVisible(true);
+				mBackground->setVisible(false);
 				mState = PostGame;
 				break;
 			}
@@ -123,7 +116,7 @@ void GameManager::update(float dt)
 			break;
 		}
 	}
-	
+	//free cpu cycle
 	SDL_Delay(1);
 }
 
@@ -162,9 +155,12 @@ int GameManager::eventHandler(SDL_Event *ev)
 				}
 				case PreGame:
 				{
+					mIntro->setVisible(false);
+					mBackground->setVisible(true);
 					mState = InGame;						
 					mBoard->init();
-				}break;
+					break;
+				}
 			}
 			break;
         }
@@ -193,8 +189,6 @@ int GameManager::eventHandler(SDL_Event *ev)
 		}
         case SDL_QUIT: {
             printf("Quit requested, quitting.\n");
-
-			//delete mBoard;
             exit(0);
         }
         break;

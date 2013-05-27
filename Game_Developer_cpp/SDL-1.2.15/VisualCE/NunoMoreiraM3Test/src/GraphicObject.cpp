@@ -40,11 +40,17 @@ GraphicObject::GraphicObject(Point pos, char* fileName)
 	}
 	void GraphicObject::render()
 	{
-		if(!mInitialized)
+		if(!mInitialized || !mVisible/* || !mDirty*/)
 			return;
 
-		if(!mDirty)
-			return;
+		SDL_Rect dest;
+
+		dest.x = mPosition.getX();
+		dest.y = mPosition.getY();
+		dest.w = mSize.getX();
+		dest.h = mSize.getY();
+
+		SDL_BlitSurface(mImage, NULL, mDrawingScreen, &dest);
 
 		undirty();
 	}

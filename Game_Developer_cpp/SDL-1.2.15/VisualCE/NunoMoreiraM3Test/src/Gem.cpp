@@ -30,22 +30,20 @@ void Gem::incPosition(float x, float y)
 
 void Gem::render()
 {
-	
-	if(!mInitialized || !mVisible/* || !mDirty*/)
-		return;
+	GraphicObject::render();
+	//if(!mInitialized || !mVisible/* || !mDirty*/)
+	//	return;
 
-	SDL_Rect dest;
+	//SDL_Rect dest;
 
-	dest.x = mPosition.getX();
-	dest.y = mPosition.getY();
-	dest.w = mSize.getX();// mBackground->w;
-	dest.h = mSize.getY();//mBackground->h;
+	//dest.x = mPosition.getX();
+	//dest.y = mPosition.getY();
+	//dest.w = mSize.getX();
+	//dest.h = mSize.getY();
 
-	SDL_BlitSurface(mImage, NULL, mDrawingScreen, &dest);
+	//SDL_BlitSurface(mImage, NULL, mDrawingScreen, &dest);
 
-	//SDL_UpdateRects(mDrawingScreen, 1, &dest);
-	
-	undirty();
+	//undirty();
 }
 
 void Gem::update(float dt)

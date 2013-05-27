@@ -11,10 +11,6 @@
 
 
 
-
-
-
-
 int main(int argc, char *argv[])
 {
 	SDL_Surface *screen;

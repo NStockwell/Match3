@@ -22,18 +22,30 @@ public:
 	void start();
 
 private:
+	//Possible states for the game
 	enum State{ PreGame, InGame, PausedGame, PostGame };
 	State mState;
+
+	//Board containing the gems
 	Board* mBoard;
+
+	//Timer for end of demo
 	float mTimePlayed;
 	
+	//
 	SDL_Rect dest;
-	SDL_Surface *mBackground;
-	SDL_Surface *mIntro;
-	SDL_Surface *mOutro;
+
+	//Mine entrance background
+	GraphicObject *mBackground;
+	//Intro image
+	GraphicObject *mIntro;
+	//Outro Image
+	GraphicObject *mOutro;
+
+	//Game Window
 	SDL_Surface *mDrawingScreen;
 
-	
+	//Handler for events
 	int eventHandler(SDL_Event *ev);
 };
 

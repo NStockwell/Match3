@@ -20,7 +20,7 @@
     <ClCompile Include="..\src\GemManager.cpp" />
     <ClCompile Include="..\src\GraphicObject.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="..\src\Point.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\GameManager.h" />
